@@ -86,4 +86,4 @@ class Frequences(Statistiques):
       raise TypeError("effectif_partiel doit retourner un entier ou décimal")
     if total == 0:
       raise ValueError("L'effectif total ne peut pas être zéro")
-    return partiel / total # type: ignore
+    return partiel / total 
