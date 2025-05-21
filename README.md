@@ -58,6 +58,3 @@ les_statistiques/
 
 - Inspiré par des exercices de statistiques classiques.
 
-## Licence
-
-Ce projet est sous licence MIT.
