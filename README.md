@@ -54,10 +54,9 @@ les_statistiques/
 └── README.md
 ```
 
-## Auteurs
+## Infos
 
 - Inspiré par des exercices de statistiques classiques.
-- Développé par [Votre Nom].
 
 ## Licence
 
