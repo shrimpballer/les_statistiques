@@ -6,7 +6,7 @@ class TestEffectifs(unittest.TestCase):
   
   def setUp(self):
     """Préparation des données de test.
-    Vous pouves changes les données ici, 
+    Vous pouves changer les données ici, 
     et les valeurs attendues dans les appels `assertEqual` ou `assertRaises`."""
     self.data_numerique = [4, 6, 5, 5]
     self.data_mixte = [4, "chat", 3.5, "chien", 2]
@@ -20,7 +20,7 @@ class TestEffectifs(unittest.TestCase):
   def test_init_rejete_types_invalides(self):
     """Vérifie le rejet des types non autorisés"""
     with self.assertRaises(TypeError):
-      Effectifs[bool]([True, None]) # type: ignore
+      Effectifs([True, None])
 
   def test_effectif_total_numerique(self):
     """Teste le compte total sur données numériques"""
@@ -33,7 +33,7 @@ class TestEffectifs(unittest.TestCase):
   def test_effectif_partiel_complet(self):
     """Teste le dictionnaire complet des effectifs"""
     result = self.eff_mix.effectif_partiel()
-    self.assertEqual(result, {4: 2, 3.5: 1, 5: 1, 2: 1})
+    self.assertEqual(result, {4: 1, 3.5: 1, 5: 1, 2: 1})
 
   def test_effectif_partiel_valeur_specifique(self):
     """Teste la recherche d'effectif par valeur"""

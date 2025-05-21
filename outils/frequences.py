@@ -1,69 +1,89 @@
 from statistiques import Statistiques
-from typing import TypeVar
+from typing import Any
 from outils.effectifs import Effectifs
 
-T = TypeVar("T", int, float, str)
+class Frequences(Statistiques):
+  """
+  Classe pour calculer les fréquences et fréquences cumulées d'une série de données numériques.
 
-class Frequences(Statistiques[T]):
-  def __init__(self, serie: list[T]):
+  Exemple d'usage:
+  ---------------
+  >>> from outils.frequences import Frequences
+  >>> data = [1, 2, 2, 3]
+  >>> freq = Frequences(data)
+  >>> freq.frequence_partielle(2)
+  0.5
+  >>> freq.frequence_cumulee(mode=1)
+  [0.25, 0.75, 1.0]
+  >>> freq.frequence_cumulee()
+  1.0
+  """
+
+  def __init__(self, serie: list[Any]):
     super().__init__(serie)
     self._eff = Effectifs(serie)
 
-# freq = effectif du char / effectif cumulé
-  def frequences(self, mode: int | str = 0):
-    cumulation = []
-    valeur_actuelle = 0
-    for nombre in self._serie:
-      if isinstance(nombre, (int, float)):
-        valeur_actuelle += self._eff.effectif_partiel(nombre) 
-        cumulation.append(str(valeur_actuelle))
-      elif isinstance(nombre, str):
-        valeur_actuelle += len(nombre)
-        cumulation.append(str(valeur_actuelle))
-      else:
-        raise TypeError(f"Type d'élément non pris en charge: {type(nombre)}")
-    if isinstance(mode, int):
-      return valeur_actuelle
-    elif isinstance(mode, str):
-      return " -> ".join(map(str, cumulation))
+  def frequence_cumulee(self, mode: int = 0) -> float | list[float]:
+    """
+    Calcule la fréquence cumulée des valeurs numériques.
 
-  def frequence(self, caractere: T) -> float:
-    if isinstance(caractere, str):
-      c = len(caractere)
+    :param mode: 
+    - 0 (défaut) : retourne la fréquence cumulée totale (float)
+    - 1 : retourne une liste des fréquences cumulées [f1, f2, ...]
+
+    :return: float ou list[float]
+    :raises TypeError: Si un élément n'est pas numérique
+    :raises ValueError: Si l'effectif total est zéro
+
+    Exemple d'usage:
+    ---------------
+    >>> freq = Frequences([1, 2, 2, 3])
+    >>> freq.frequence_cumulee()
+    1.0
+    >>> freq.frequence_cumulee(mode=1)
+    [0.25, 0.75, 1.0]
+    """
+    effectifs = self._eff.effectif_partiel()
+    total = self._eff.effectif_total
+    if total == 0:
+      raise ValueError("L'effectif cumulé ne peut pas être zéro")
+    sorted_keys = sorted(effectifs.keys())
+    cumulation = []
+    valeur_actuelle = 0.0
+    for key in sorted_keys:
+      valeur_actuelle += effectifs[key] / total
+      cumulation.append(valeur_actuelle)
+    if mode == 0:
+      return valeur_actuelle
     else:
-      c = caractere
-    partiel = self._eff.effectif_partiel(c)
+      return cumulation
+
+  def frequence_partielle(self, valeur: Any) -> float:
+    """
+    Calcule la fréquence partielle d'une valeur numérique.
+
+    :param valeur: La valeur numérique dont on veut la fréquence
+    :type valeur: int | float
+    :return: Fréquence de la valeur (float)
+    :raises TypeError: Si la valeur n'est pas numérique
+    :raises ValueError: Si l'effectif total est zéro
+
+    Exemple d'usage:
+    ---------------
+    >>> freq = Frequences([1, 2, 2, 3])
+    >>> freq.frequence_partielle(2)
+    0.5
+    >>> freq.frequence_partielle(1)
+    0.25
+    >>> freq.frequence_partielle(3)
+    0.25
+    """
+    if not isinstance(valeur, (int, float)):
+      raise TypeError("La valeur doit être numérique")
+    partiel = self._eff.effectif_partiel(valeur)
+    total = self._eff.effectif_total
     if not isinstance(partiel, (int, float)):
       raise TypeError("effectif_partiel doit retourner un entier ou décimal")
-    return partiel / self._eff.effectif_total()
-
-  def frequence_cumulee(self, mode: int | str = 0):
-    cumulation = []
-    valeur_actuelle = 0
-    for nombre in self.frequences():
-      if isinstance(nombre, (int, float)):
-        valeur_actuelle += nombre
-        cumulation.append(str(valeur_actuelle))
-      elif isinstance(nombre, str):
-        valeur_actuelle += len(nombre)
-        cumulation.append(str(valeur_actuelle))
-      else:
-        raise TypeError("Type non pris en charge pour la fréquence cumulée")
-      
-    if isinstance(mode, int):
-      return valeur_actuelle
-    elif isinstance(mode, str):
-      return " -> ".join(map(str, cumulation))
-    else:
-      raise ValueError("Mode non pris en charge")
-    
-# exemples d'utilisation
-if __name__ == "__main__":
-  data = [1, 2, 3, "chat", "chien"]
-  frequence = Frequences(data)
-  print(f"Serie: {frequence._serie}")
-  print(f"Eff. Total: {frequence._eff.effectif_total()}")
-  print(f"Fréquences: {frequence.frequences()}")
-  print(f"Fréquence de 'chat': {frequence.frequence('chat')}")
-  print(f"Fréquence cumulée: {frequence.frequence_cumulee()}")
-  print(f"Fréquence cumulée (str): {frequence.frequence_cumulee('')}")
+    if total == 0:
+      raise ValueError("L'effectif total ne peut pas être zéro")
+    return partiel / total # type: ignore
