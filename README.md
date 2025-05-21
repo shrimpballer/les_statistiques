@@ -50,7 +50,8 @@ les_statistiques/
 ├── statistiques.py         # Classe de base
 ├── outils/
 │   ├── effectifs.py        # Calcul des effectifs
-│   └── frequences.py       # Calcul des fréquences
+│   ├── frequences.py       # Calcul des fréquences
+│   ├── ...                 # des autres fichiers non complétés
 └── README.md
 ```
 
